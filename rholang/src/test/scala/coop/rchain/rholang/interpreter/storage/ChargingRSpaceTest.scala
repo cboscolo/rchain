@@ -1,5 +1,7 @@
 package coop.rchain.rholang.interpreter.storage
 
+import java.nio.file.Files
+
 import cats.Id
 import cats.effect.Sync
 import com.google.protobuf.ByteString
@@ -238,9 +240,10 @@ object ChargingRSpaceTest {
     override def clear(): Id[Unit]                                                  = ???
   }
 
-  private def createRhoISpace(): RhoISpace = {
+  def createRhoISpace(): RhoISpace = {
     import coop.rchain.rholang.interpreter.storage.implicits._
-    val context: RhoContext = Context.createInMemory()
+    val dbDir               = Files.createTempDirectory("rchain-charging-rspace-test-")
+    val context: RhoContext = Context.createFineGrained(dbDir, 1024L * 1024L * 4)
     val space: RhoISpace    = RSpace.create(context, Branch("test"))
     space
   }
