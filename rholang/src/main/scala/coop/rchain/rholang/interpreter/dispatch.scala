@@ -3,6 +3,7 @@ package coop.rchain.rholang.interpreter
 import cats.Parallel
 import cats.effect.Sync
 import cats.mtl.FunctorTell
+import cats.implicits._
 import coop.rchain.crypto.hash.Blake2b512Random
 import coop.rchain.models.Channel.ChannelInstance.Quote
 import coop.rchain.models.TaggedContinuation.TaggedCont.{Empty, ParBody, ScalaBodyRef}
