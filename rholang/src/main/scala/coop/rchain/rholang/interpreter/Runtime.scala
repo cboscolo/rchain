@@ -51,8 +51,8 @@ object Runtime {
   type RhoIStore  = CPAK[IStore]
   type RhoContext = CPAK[Context]
 
-  type RhoDispatch[F[_]] = Dispatch[F, ListChannelWithRandom, TaggedContinuation]
-  type RhoSysFunction    = Function1[Seq[ListChannelWithRandom], Task[Unit]]
+  type RhoDispatch[F[_]] = Dispatch[F, ListChannelWithRandomAndPhlos, TaggedContinuation]
+  type RhoSysFunction    = Function1[Seq[ListChannelWithRandomAndPhlos], Task[Unit]]
   type RhoDispatchMap    = Map[Long, RhoSysFunction]
 
   private type CPAK[F[_, _, _, _]] =
@@ -64,7 +64,7 @@ object Runtime {
       BindPattern,
       OutOfPhlogistonsError.type,
       ListChannelWithRandom,
-      ListChannelWithRandom,
+      ListChannelWithRandomAndPhlos,
       TaggedContinuation
     ]
 
@@ -75,7 +75,7 @@ object Runtime {
       BindPattern,
       OutOfPhlogistonsError.type,
       ListChannelWithRandom,
-      ListChannelWithRandom,
+      ListChannelWithRandomAndPhlos,
       TaggedContinuation
     ]
 
@@ -113,7 +113,7 @@ object Runtime {
       space: RhoISpace,
       replaySpace: RhoISpace,
       processes: immutable.Seq[(Name, Arity, Remainder, Ref)]
-  ): Seq[Option[(TaggedContinuation, Seq[ListChannelWithRandom])]] =
+  ): Seq[Option[(TaggedContinuation, Seq[ListChannelWithRandomAndPhlos])]] =
     processes.flatMap {
       case (name, arity, remainder, ref) =>
         val channels = List(Channel(Quote(name)))
@@ -240,7 +240,7 @@ object Runtime {
       )
     }
 
-    val res: Seq[Option[(TaggedContinuation, Seq[ListChannelWithRandom])]] =
+    val res: Seq[Option[(TaggedContinuation, Seq[ListChannelWithRandomAndPhlos])]] =
       introduceSystemProcesses(space, replaySpace, procDefs)
 
     assert(res.forall(_.isEmpty))

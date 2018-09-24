@@ -185,10 +185,10 @@ object ChargingRSpaceTest {
           BindPattern,
           errors.OutOfPhlogistonsError.type,
           ListChannelWithRandom,
-          ListChannelWithRandom
+          ListChannelWithRandomAndPhlos
         ]
     ): Id[Either[errors.OutOfPhlogistonsError.type, Option[
-      (TaggedContinuation, immutable.Seq[ListChannelWithRandom])
+      (TaggedContinuation, immutable.Seq[ListChannelWithRandomAndPhlos])
     ]]] =
       _rspace
         .consume(channels, patterns, continuation, persist)
@@ -199,10 +199,10 @@ object ChargingRSpaceTest {
           BindPattern,
           errors.OutOfPhlogistonsError.type,
           ListChannelWithRandom,
-          ListChannelWithRandom
+          ListChannelWithRandomAndPhlos
         ]
     ): Id[Either[errors.OutOfPhlogistonsError.type, Option[
-      (TaggedContinuation, immutable.Seq[ListChannelWithRandom])
+      (TaggedContinuation, immutable.Seq[ListChannelWithRandomAndPhlos])
     ]]] =
       _rspace
         .produce(channel, data, persist)
@@ -220,11 +220,11 @@ object ChargingRSpaceTest {
           BindPattern,
           errors.OutOfPhlogistonsError.type,
           ListChannelWithRandom,
-          ListChannelWithRandom
+          ListChannelWithRandomAndPhlos
         ]
-    ): Id[Option[(TaggedContinuation, immutable.Seq[ListChannelWithRandom])]] = ???
-    override def createCheckpoint(): Id[Checkpoint]                           = ???
-    override def reset(root: Blake2b256Hash): Id[Unit]                        = ???
+    ): Id[Option[(TaggedContinuation, immutable.Seq[ListChannelWithRandomAndPhlos])]] = ???
+    override def createCheckpoint(): Id[Checkpoint]                                   = ???
+    override def reset(root: Blake2b256Hash): Id[Unit]                                = ???
     override def retrieve(
         root: Blake2b256Hash,
         channelsHash: Blake2b256Hash
