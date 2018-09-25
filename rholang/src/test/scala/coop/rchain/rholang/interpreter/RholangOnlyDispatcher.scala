@@ -1,8 +1,5 @@
 package coop.rchain.rholang.interpreter
-<<<<<<<<< Temporary merge branch 1
-=========
 
->>>>>>>>> Temporary merge branch 2
 import cats.Parallel
 import cats.effect.Sync
 import cats.implicits._

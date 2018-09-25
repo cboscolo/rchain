@@ -318,7 +318,8 @@ class HashSetCasperTest extends FlatSpec with Matchers {
       s"""for(@purse <- @"$bondingForwarderAddress"; @pos <- @"proofOfStake"){
        |  @(pos, "bond")!("04$pubKey".hexToBytes(), "secp256k1Verify", purse, "$pubKey", "$bondingStatusOut")
        |}""".stripMargin,
-      System.currentTimeMillis()
+      System.currentTimeMillis(),
+      Integer.MAX_VALUE
     )
     val transferStatusOut = "transferOut"
     val bondingTransferDeploy =

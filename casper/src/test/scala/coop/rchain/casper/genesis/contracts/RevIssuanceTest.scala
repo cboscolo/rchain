@@ -111,7 +111,8 @@ object RevIssuanceTest {
 
     ProtoUtil.sourceDeploy(
       s"""@"$ethAddress"!(["$pubKey", "$statusOut"], "${Base16.encode(unlockSig)}")""",
-      System.currentTimeMillis()
+      System.currentTimeMillis(),
+      Integer.MAX_VALUE
     )
   }
 
@@ -143,7 +144,8 @@ object RevIssuanceTest {
            .encode(transferSig)}", "$destination", "$transferStatusOut")
        |}
      """.stripMargin,
-      System.currentTimeMillis()
+      System.currentTimeMillis(),
+      Integer.MAX_VALUE
     )
   }
 }
