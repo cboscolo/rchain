@@ -14,6 +14,7 @@ import coop.rchain.crypto.codec.Base16
 import coop.rchain.crypto.hash.Blake2b256
 import coop.rchain.models.{PCost, Par}
 import coop.rchain.rholang.build.CompiledRholangSource
+import coop.rchain.rholang.interpreter.accounting
 
 import scala.collection.immutable
 
@@ -391,7 +392,7 @@ object ProtoUtil {
       .withUser(ByteString.EMPTY)
       .withTimestamp(timestamp)
       .withTerm(term)
-      .withPhloLimit(Integer.MAX_VALUE)
+      .withPhloLimit(accounting.MAX_VALUE)
   }
 
   def basicDeploy(id: Int): Deploy = {
@@ -438,7 +439,7 @@ object ProtoUtil {
     )
 
   def termDeployNow(term: Par): Deploy =
-    termDeploy(term, System.currentTimeMillis(), Integer.MAX_VALUE)
+    termDeploy(term, System.currentTimeMillis(), accounting.MAX_VALUE)
 
   def deployDataToDeploy(dd: DeployData): Deploy = Deploy(
     term = InterpreterUtil.mkTerm(dd.term).toOption,
