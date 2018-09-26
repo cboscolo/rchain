@@ -22,7 +22,7 @@ import coop.rchain.rspace.internal.{Datum, Row, WaitingContinuation}
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import org.scalatest.{FlatSpec, Matchers}
-
+import coop.rchain.shared.PathOps._
 import scala.collection.immutable.BitSet
 import scala.collection.mutable.HashMap
 import scala.concurrent.Await
@@ -50,6 +50,7 @@ trait PersistentStoreTester {
     } finally {
       space.close()
       context.close()
+      dbDir.recursivelyDelete()
     }
   }
 }
