@@ -40,7 +40,7 @@ class CreateBlockAPITest extends FlatSpec with Matchers {
     val deploys = List(
       "@0!(0) | for(_ <- @0){ @1!(1) }",
       "for(_ <- @1){ @2!(2) }"
-    ).map(ProtoUtil.sourceDeploy(_, System.currentTimeMillis(), Integer.MAX_VALUE))
+    ).map(ProtoUtil.sourceDeploy(_, System.currentTimeMillis(), Costs.MAX_VALUE))
 
     implicit val logEff = new LogStub[Effect]
     def testProgram(
@@ -78,7 +78,7 @@ private class SleepingMultiParentCasperImpl[F[_]: Monad: Timer](underlying: Mult
   def deploy(d: DeployData): F[Either[Throwable, Unit]]     = underlying.deploy(d)
   def estimator(dag: BlockDag): F[IndexedSeq[BlockMessage]] = underlying.estimator(dag)
   def blockDag: F[BlockDag]                                 = underlying.blockDag
-  def normalizedInitialFault(weights: Map[Validator, Int]): F[Float] =
+  def normalizedInitialFault(weights: Map[Validator, Long]): F[Float] =
     underlying.normalizedInitialFault(weights)
   def lastFinalizedBlock: F[BlockMessage]          = underlying.lastFinalizedBlock
   def storageContents(hash: ByteString): F[String] = underlying.storageContents(hash)

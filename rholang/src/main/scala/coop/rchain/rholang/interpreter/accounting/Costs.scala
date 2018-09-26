@@ -78,4 +78,6 @@ trait Costs {
   ) {
     def storageCost: Cost = Cost(a.map(a => gm.toByteArray(a).size).sum)
   }
+
+  final val MAX_VALUE = Long.MaxValue
 }

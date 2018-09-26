@@ -59,7 +59,7 @@ parser.add_argument("-n", "--network",
 parser.add_argument("--peer-command",
                     dest='peer_command',
                     type=str,
-                    default="run --bootstrap rnode://cb74ba04085574e9f0102cc13d39f0c72219c5bb@bootstrap.rchain.coop:40400",
+                    default="run --bootstrap rnode://cb74ba04085574e9f0102cc13d39f0c72219c5bb@bootstrap.rchain.coop?protocol=40400&discovery=40404",
                     help="peer container run command")
 parser.add_argument("-p", "--peers-amount",
                     dest='peer_amount',
@@ -113,7 +113,7 @@ parser.add_argument("-T", "--tests-to-run",
                     dest='tests_to_run',
                     type=str,
                     nargs='+',
-                    default=['count', 'eval', 'repl', 'propose', 'errors', 'RuntimeException'],
+                    default=['count', 'eval', 'propose', 'errors', 'RuntimeException'],
                     help="run these tests in this order")
 parser.add_argument("--thread-pool-size",
                     dest='thread_pool_size',
@@ -327,7 +327,7 @@ class rnode:
 
     @staticmethod
     def deploy_cmd(f):
-        return rnode.binary + f' deploy --from "0x1" --phlo-limit 0 --phlo-price 0 --nonce 0 {f}'
+        return rnode.binary + f' deploy --from "0x1" --phlo-limit 100000 --phlo-price 0 --nonce 0 {f}'
 
     propose_cmd = binary + " propose"
 

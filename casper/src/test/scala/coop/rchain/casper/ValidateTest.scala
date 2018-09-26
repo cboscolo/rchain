@@ -17,7 +17,7 @@ import coop.rchain.casper.helper.{BlockGenerator, BlockStoreFixture, IndexedBloc
 import coop.rchain.casper.helper.BlockGenerator._
 import coop.rchain.casper.protocol.Event.EventInstance
 import coop.rchain.casper.protocol._
-import coop.rchain.casper.util.ProtoUtil
+import coop.rchain.casper.util.{Costs, ProtoUtil}
 import coop.rchain.casper.util.ProtoUtil.termDeploy
 import coop.rchain.casper.util.rholang.{InterpreterUtil, RuntimeManager}
 import coop.rchain.crypto.codec.Base16
@@ -299,7 +299,7 @@ class ValidateTest
         ByteString.copyFromUtf8("Validator 3")
       )
       val bonds = validators.zipWithIndex.map {
-        case (v, i) => Bond(v, 2 * i + 1)
+        case (v, i) => Bond(v, 2L * i.toLong + 1L)
       }
 
       def latestMessages(messages: Seq[BlockMessage]): Map[Validator, BlockHash] =
@@ -442,7 +442,7 @@ class ValidateTest
       )
 
       log.warns.size should be(1)
-      log.warns.forall(_.contains("not follow from bonds of creator justification block")) should be(
+      log.warns.forall(_.contains("do not match the bonded validators")) should be(
         true
       )
   }
@@ -455,7 +455,7 @@ class ValidateTest
         ByteString.copyFromUtf8("Validator 2")
       )
       val bonds = validators.zipWithIndex.map {
-        case (v, i) => Bond(v, 2 * i + 1)
+        case (v, i) => Bond(v, 2L * i.toLong + 1L)
       }
 
       def latestMessages(messages: Seq[BlockMessage]): Map[Validator, BlockHash] =
@@ -507,36 +507,28 @@ class ValidateTest
       log.warns.size should be(1)
   }
 
-  "Bonds cache validation" should "succeed on a valid block and fail on modified bonds" in {
-    val (_, validators)   = (1 to 4).map(_ => Ed25519.newKeyPair).unzip
-    val bonds             = validators.zipWithIndex.map { case (v, i) => v -> (2 * i + 1) }.toMap
-    val initial           = Genesis.withoutContracts(bonds, 0L, 0L, "rchain")
-    val storageDirectory  = Files.createTempDirectory(s"hash-set-casper-test-genesis")
-    val storageSize: Long = 1024L * 1024
-    val activeRuntime     = Runtime.create(storageDirectory, storageSize)
-    val runtimeManager    = RuntimeManager.fromRuntime(activeRuntime)
-    val emptyStateHash    = runtimeManager.emptyStateHash
+  "Bonds cache validation" should "succeed on a valid block and fail on modified bonds" in withStore {
+    implicit blockStore =>
+      val (_, validators) = (1 to 4).map(_ => Ed25519.newKeyPair).unzip
+      val bonds           = HashSetCasperTest.createBonds(validators)
+      val genesis         = HashSetCasperTest.createGenesis(bonds)
 
-    val proofOfStakeValidators = bonds.map(bond => ProofOfStakeValidator(bond._1, bond._2)).toSeq
-    val proofOfStakeStubPar    = ProofOfStake(proofOfStakeValidators).term
-    val genesis = Genesis.withContracts(
-      List(
-        ProtoUtil.termDeploy(proofOfStakeStubPar, System.currentTimeMillis(), Integer.MAX_VALUE)
-      ),
-      initial,
-      emptyStateHash,
-      runtimeManager
-    )
+      val storageDirectory  = Files.createTempDirectory(s"hash-set-casper-test-genesis")
+      val storageSize: Long = 1024L * 1024
+      val activeRuntime     = Runtime.create(storageDirectory, storageSize)
+      val runtimeManager    = RuntimeManager.fromRuntime(activeRuntime)
+      val _ = InterpreterUtil
+        .validateBlockCheckpoint[Id](genesis, BlockDag.empty, Set.empty[ByteString], runtimeManager)
 
-    Validate.bondsCache[Id](genesis, runtimeManager) should be(Right(Valid))
+      Validate.bondsCache[Id](genesis, runtimeManager) should be(Right(Valid))
 
-    val modifiedBonds     = Seq.empty[Bond]
-    val modifiedPostState = genesis.body.get.postState.get.withBonds(modifiedBonds)
-    val modifiedBody      = genesis.body.get.withPostState(modifiedPostState)
-    val modifiedGenesis   = genesis.withBody(modifiedBody)
-    Validate.bondsCache[Id](modifiedGenesis, runtimeManager) should be(Left(InvalidBondsCache))
+      val modifiedBonds     = Seq.empty[Bond]
+      val modifiedPostState = genesis.body.get.postState.get.withBonds(modifiedBonds)
+      val modifiedBody      = genesis.body.get.withPostState(modifiedPostState)
+      val modifiedGenesis   = genesis.withBody(modifiedBody)
+      Validate.bondsCache[Id](modifiedGenesis, runtimeManager) should be(Left(InvalidBondsCache))
 
-    activeRuntime.close()
+      activeRuntime.close()
   }
 
   "Field format validation" should "succeed on a valid block and fail on empty fields" in {
