@@ -8,6 +8,7 @@ test:integration-test-for-p2p-network:
     - preloaded-ubuntu1804 
   script:
     - ./scripts/install_bnfc.sh
+    - java -version
     - sudo sbt -Dsbt.log.noformat=true clean rholang/bnfc:generate casper/test:compile node/docker:publishLocal
     - sudo python3.6 -m pip install argparse docker pexpect requests
     - sudo ./scripts/p2p-test-tool.py -b -t -p 2 -m 2048m
@@ -18,6 +19,7 @@ test:integration-test-for-artifact-creation:
     - preloaded-ubuntu1804 
   script:
     - ./scripts/install_bnfc.sh
+    - java -version
     - sudo sbt -Dsbt.log.noformat=true clean rholang/bnfc:generate casper/test:compile node/rpm:packageBin node/debian:packageBin node/universal:packageZipTarball 
 
 deploy:deploy-rnode-to-dockerhub:
@@ -49,6 +51,7 @@ deploy:deploy-java10-rnode-to-dockerhub:
     - preloaded-ubuntu1804
   script:
     - ./scripts/install_bnfc.sh
+    - java -version
     - sudo sbt -Dsbt.log.noformat=true clean rholang/bnfc:generate casper/test:compile node/docker:publishLocal
     - echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin
     - sudo docker tag coop.rchain/rnode:latest rchain/rnode:java10
